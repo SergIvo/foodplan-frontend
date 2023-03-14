@@ -71,9 +71,10 @@ class Recipe(models.Model):
         ("KETO", "Keto"),
     )
 
-    created_by = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
+        related_name='created_by'
     )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
