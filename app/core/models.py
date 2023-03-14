@@ -70,7 +70,6 @@ class Recipe(models.Model):
     )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    time_minutes = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
     meal_type = models.CharField(max_length=9, choices=MEAL_TYPE_CHOICES)
     allergy_type = models.CharField(
