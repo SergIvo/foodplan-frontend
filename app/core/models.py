@@ -64,6 +64,13 @@ class Recipe(models.Model):
         ("LACTOSE", "Lactose"),
     )
 
+    MENU_TYPE_CHOICES = (
+        ("CLASSIC", "Classic"),
+        ("LOW CARB", "Low Carb"),
+        ("VEGETERIAN", "Vegeterian"),
+        ("KETO", "Keto"),
+    )
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
@@ -76,6 +83,9 @@ class Recipe(models.Model):
         max_length=9,
         choices=ALLERGY_TYPE_CHOICES,
         blank=True)
+    menu_type = models.CharField(
+        max_length=10,
+        choices=MENU_TYPE_CHOICES)
     link = models.CharField(max_length=255, blank=True)
 
     def __str__(self):

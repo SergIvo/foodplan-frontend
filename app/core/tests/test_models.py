@@ -60,9 +60,10 @@ class ModelTests(TestCase):
         recipe = models.Recipe.objects.create(
             created_by=created_by,
             title='Sample recipe name',
-            price=Decimal('5.50'),
+            price=Decimal('500.00'),
             meal_type='Dinner',
-            description='Sample recipe description.'
+            description='Sample recipe description.',
+            menu_type='Classic',
         )
 
         self.assertEqual(str(recipe), recipe.title)
