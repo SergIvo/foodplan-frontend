@@ -56,6 +56,7 @@ class Recipe(models.Model):
     )
 
     ALLERGY_TYPE_CHOICES = (
+        ("NONE", "None"),
         ("FISH", "Fish"),
         ("MEAT", "Meat"),
         ("GRAIN", "Grain"),
@@ -74,7 +75,7 @@ class Recipe(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
-        related_name='created_by'
+        related_name='created_by',
     )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
