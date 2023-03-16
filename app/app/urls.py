@@ -19,6 +19,7 @@ from drf_spectacular.views import (
 )
 from django.contrib import admin
 from django.urls import path, include
+from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,4 +31,7 @@ urlpatterns = [
     ),
     path('api/user/', include('user.urls')),
     path('api/recipe/', include('recipe.urls')),
+    path('', views.index, name='index'),
+    path('registration', views.register_user, name='register_user'),
+    path('auth', views.authenticate_user, name='authenticate_user'),
 ]
