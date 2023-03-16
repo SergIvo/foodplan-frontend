@@ -10,7 +10,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import Recipe
+from core.models import Recipe, Ingredient
 
 from recipe.serializers import (
     RecipeSerializer,
@@ -25,6 +25,7 @@ def detail_url(recipe_id):
     """Create and return a recipe detail URL."""
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
+
 def create_recipe(user, **params):
     """Create and return a recipe."""
     defaults = {
@@ -38,6 +39,11 @@ def create_recipe(user, **params):
 
     recipe = Recipe.objects.create(user=user, **defaults)
     return recipe
+
+
+def create_user(**params):
+    """Create and return new user."""
+    return get_user_model().objects.create_user(**params)
 
 
 class PublicRecipeApiTests(TestCase):
@@ -58,10 +64,7 @@ class PrivateRecipeApiTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = get_user_model().objects.create_user(
-            'user@example.com',
-            'testpass123',
-        )
+        self.user = create_user(email='user@example.com', password='testpass123')
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recipes(self):
@@ -104,3 +107,70 @@ class PrivateRecipeApiTests(TestCase):
         for key, value in payload.items():
             self.assertEqual(getattr(recipe, key), value)
         self.assertEqual(recipe.user, self.user)
+
+    def test_partial_update(self):
+        """Test partial update of the recipe."""
+        user=self.user
+        user.is_staff = True
+        original_link = 'https://example.com/test.pdf'
+        recipe = create_recipe(
+            user=self.user,
+            title='Sample recipe title',
+            link=original_link
+        )
+
+        payload = {'title': 'NEW TITLE'}
+        url = detail_url(recipe.id)
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.title, payload['title'])
+        self.assertEqual(recipe.link, original_link)
+        self.assertEqual(recipe.user, self.user)
+
+    def test_create_recipe_with_new_ingredients(self):
+        """Test creating a recipe with new ingredients."""
+        user = self.user
+        user.is_staff = True
+        payload = {
+            'title': 'AUTO Test Create Recipe',
+            'price': Decimal('111.11'),
+            'meal_type': 'BREAKFAST',
+            'menu_type': 'KETO',
+            'ingredients': [
+                {'name': 'Ingr One', 'calories': 200, 'weight': 50},
+                {'name': 'Ingr Two', 'calories': 1200, 'weight': 150},
+                {'name': 'Ingr Three', 'calories': 750, 'weight': 350},
+                {'name': 'Ingr Four', 'calories': 505, 'weight': 250},
+            ]
+        }
+        res = self.client.post(RECIPES_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        recipes = Recipe.objects.filter(user=self.user)
+        self.assertEqual(recipes.count(), 1)
+        recipe = recipes[0]
+        self.assertEqual(recipe.ingredients.count(), 4)
+        for ingredient in payload['ingredients']:
+            exists = recipe.ingredients.filter(
+                name=ingredient['name'],
+                user=self.user,
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_ingredient_on_update(self):
+        """Test creating ingredient when updating recipe."""
+        user = self.user
+        user.is_staff = True
+        recipe = create_recipe(user=self.user)
+
+        payload = {'ingredients': [
+                {'name': 'Ingr One', 'calories': 200, 'weight': 50}
+            ]}
+        url = detail_url(recipe.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        new_ingredient = Ingredient.objects.get(user=self.user, name='Ingr One')
+        self.assertIn(new_ingredient, recipe.ingredients.all())

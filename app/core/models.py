@@ -9,6 +9,8 @@ from django.contrib.auth.models import (
     PermissionsMixin
 )
 
+from multiselectfield import MultiSelectField
+
 
 class UserManager(BaseUserManager):
     """Manager for users."""
@@ -35,10 +37,23 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system."""
+    ALLERGY_TYPE_CHOICES = (
+        ("NONE", "None"),
+        ("FISH", "Fish"),
+        ("MEAT", "Meat"),
+        ("GRAIN", "Grain"),
+        ("HONEY", "Honey"),
+        ("NUTS", "Nuts"),
+        ("LACTOSE", "Lactose"),
+    )
+
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_subscribed = models.BooleanField(default=False)
+    subscription_until = models.DateTimeField(blank=True, null=True)
+    allergy_type = MultiSelectField(choices=ALLERGY_TYPE_CHOICES, max_choices=6, max_length=12, blank=True)
 
     objects = UserManager()
 
@@ -81,14 +96,28 @@ class Recipe(models.Model):
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     meal_type = models.CharField(max_length=9, choices=MEAL_TYPE_CHOICES)
-    allergy_type = models.CharField(
-        max_length=9,
-        choices=ALLERGY_TYPE_CHOICES,
-        blank=True)
+    allergy_type = MultiSelectField(choices=ALLERGY_TYPE_CHOICES, max_choices=6, max_length=12, blank=True)
     menu_type = models.CharField(
         max_length=10,
         choices=MENU_TYPE_CHOICES)
     link = models.CharField(max_length=255, blank=True)
+    ingredients = models.ManyToManyField('Ingredient')
 
     def __str__(self):
         return self.title
+
+
+class Ingredient(models.Model):
+    """Ingredient for recipes."""
+
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.DO_NOTHING,
+        related_name='added_by',
+    )
+    calories = models.PositiveSmallIntegerField(blank=True, null=True)
+    weight = models.PositiveSmallIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
