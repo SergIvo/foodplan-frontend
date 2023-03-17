@@ -9,6 +9,8 @@ def index(request):
 
 
 def register_user(request):
+    if request.method == 'POST':
+        print(request.POST.get('name'))
     context = {
         'mock': 'mock'
     }
