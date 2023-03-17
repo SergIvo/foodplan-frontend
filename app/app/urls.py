@@ -34,4 +34,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('registration', views.register_user, name='register_user'),
     path('auth', views.authenticate_user, name='authenticate_user'),
+    path('account', views.user_account, name='user_account'),
+    path('dishes', views.show_dishes_cards, name='show_dishes_cards'),
 ]
