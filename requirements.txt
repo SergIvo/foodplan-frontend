@@ -4,3 +4,5 @@ sqlparse==0.4.2
 psycopg2>=2.9.3,<2.10
 drf-spectacular>=0.22.1,<0.23
 django-multiselectfield
+Pillow>=8.2.0,<8.3.0
+uwsgi>=2.0.19,<2.1
