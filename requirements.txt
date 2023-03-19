@@ -1,9 +1,8 @@
 Django>=4.0.1,<=4.1.5
 djangorestframework>=3.12.4,!=3.14.0
 sqlparse==0.4.2
-environs=9.5.0
+environs==9.5.0
 drf-spectacular>=0.22.1,<0.23
 django-multiselectfield
 Pillow>=8.2.0,<8.3.0
-uwsgi>=2.0.19,<2.1
 requests==2.28.2
