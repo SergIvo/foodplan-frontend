@@ -157,3 +157,5 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
 }
+
+BASE_API_URL = env.str('BASE_API_URL', 'http://localhost:8000')
