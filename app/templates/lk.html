@@ -18,7 +18,7 @@
                 <a class="navbar-brand" href="{% url 'index' %}">
                     <img src="{% static 'img/logo.8d8f24edbb5f.svg' %}" height="55" width="189" alt="">
                 </a>
-                <button class="btn btn-outline-success shadow-none foodplan_green foodplan__border_green">Выйти</button>
+                <a class="btn btn-outline-success shadow-none foodplan_green foodplan__border_green" href="{% url 'logout_user' %}">Выйти</a>
             </div>
         </nav>
     </header>
@@ -32,7 +32,11 @@
                         </h4>
                         <h2 class="text-center"><strong>Личный кабинет</strong></h2>
                     </div>
-                    
+                    {% if alert %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert" onclick="remove(this)">
+                            {{ alert }}
+                        </div>
+                    {% endif %}
                     <div class="card col-12 col-md-2 p-3 mb-3 d-flex flex-column align-items-center foodplan__shadow">
                         <div class="position-relative">
                             <img src="{% static 'img/test_avatar.png' %}" alt="" width="100" height="100" class="rounded-pill">
@@ -57,18 +61,19 @@
                             </ul>
                             <div class="tab-content mt-2">
                                 <div class="tab-pane fade show active" id="data">
-                                    <form action="">
+                                    <form action="{% url 'user_account' %}" method="post">
+                                        {% csrf_token %}
                                         <div class="mb-3">
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <label for="exampleInputEmail1" class="form-label">Имя</label>
                                                 <small><a href="#" class="link-dark foodplan_green">изменить</a></small>
                                             </div>
                                         
-                                            <input type="text" class="form-control" id="name" placeholder="{{ user.name }}">
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="{{ user.name }}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="exampleInputEmail1" class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="{{ user.email }}">
+                                            <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="{{ user.email }}">
                                         </div>
                                         <div class="mb-3">
                                             <div class="d-flex align-items-center justify-content-between">
@@ -76,11 +81,22 @@
                                                 <small><a href="#" class="link-dark foodplan_green">изменить</a></small>
                                             </div>
                                         
-                                            <input type="password" class="form-control" id="password" placeholder="{{ user.password }}">
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="{{ user.password }}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="exampleInputPassword1" class="form-label">Подтверждение пароля</label>
                                             <input type="password" class="form-control" id="PasswordConfirm">
+                                        </div>
+                                        <div class="mb-3">
+                                            <div>
+                                                <label for="exampleInputPassword1" class="form-label">Аллергии и нежелательные продукты</label>
+                                            </div>
+                                            {% for allergie in allergies %}
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input foodplan__border_green" type="checkbox" name="{{allergie.name}}" value="checked" {{allergie.state}}>
+                                                    <label class="form-check-label" for="{{allergie.name}}">{{allergie.label}}</label>
+                                                </div>
+                                            {% endfor %}
                                         </div>
                                         <div class="d-block">
                                             <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green">Сохранить
@@ -96,7 +112,7 @@
                                         <div class="col-10 col-md-10">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <a calss="button-default"  href="{% url 'show_dishes_cards' %}">
+                                                    <a class="button-default"  href="{% url 'show_dishes_cards' %}">
                                                         <h2>{{ menu.name }}</h2>
                                                     </a>
                                                 </div>
@@ -159,4 +175,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+    <script>
+        function remove(el) {
+        var element = el;
+        element.remove();
+        }
+    </script>
 </body>

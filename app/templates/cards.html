@@ -25,7 +25,7 @@
     <main style="margin-top: calc(2rem + 75px);">
         <section>
             <div class="container">
-                {% for dish in dishes %}
+                {% for recipe in recipes %}
                 <div class="row">
                     <div class="col-12 col-md-4 d-flex justify-content-center">
                         <div class="card foodplan__card_borderless">
@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-12 col-md-8 d-flex flex-column justify-content-between">
                         <div class="row">
-                            <h2>{{ dish.name }}</h2>
+                            <h2>{{ recipe.title }}</h2>
                             <div class="col-12 col-sm-6 d-flex flex-column justify-content-between">
                                 <h6>Описание рецепта Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi eius nemo voluptatum minus
                                     facilis blanditiis ut architecto rem maiores, aperiam aut debitis repellat quod voluptates natus, laboriosam hic
@@ -46,13 +46,11 @@
                             <div class="col-12 col-sm-6">
                                 <small class="link-secondary">Ингредиенты:</small>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
+                                    {% for ingredient in recipe.ingredients %}
+                                        <li class="list-group-item disabled"><small>{{ ingredient.name }} (500г.)</small></li>
+                                    {% endfor %}
                                 </ul>
-                                <small class="link-secondary">Общая калорийность: 1000 ккал</small>
+                                <small class="link-secondary">Общая калорийность: {{ recipe.total_calories }} ккал</small>
                             </div>
                         </div>
                     </div>
