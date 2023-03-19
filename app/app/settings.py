@@ -141,7 +141,7 @@ if DEBUG:
     STATIC_URL = '/static/static/'
     MEDIA_URL = '/static/media/'
 else:
-    STATIC_URL = '/assets/assets/'
+    STATIC_URL = '/assets/static/'
 
 MEDIA_ROOT = '/vol/web/media/'
 #STATIC_ROOT = '/vol/web/static'
