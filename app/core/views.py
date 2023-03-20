@@ -20,7 +20,7 @@ def register_user(request):
             password=request.POST.get('password')
         )
 
-        user = authenticate(email=email, password=password)
+        user = authenticate(email=user.email, password=user.password)
 
         if user:
             login(request, user)
