@@ -64,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_subscribed = models.BooleanField(default=False)
     subscription_until = models.DateTimeField(blank=True, null=True)
-    allergy_type = MultiSelectField(choices=ALLERGY_TYPE_CHOICES, max_choices=6, max_length=12, blank=True)
+    allergy_type = MultiSelectField(choices=ALLERGY_TYPE_CHOICES, max_choices=6, max_length=125, blank=True)
 
     objects = UserManager()
 
@@ -113,7 +113,7 @@ class Recipe(models.Model):
         choices=MENU_TYPE_CHOICES)
     link = models.CharField(max_length=255, blank=True)
     ingredients = models.ManyToManyField('Ingredient')
-    image = models.ImageField(null=True, blank=True, upload_to=recipe_image_file_path)
+    image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
         return self.title
