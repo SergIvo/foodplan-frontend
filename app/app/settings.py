@@ -37,6 +37,8 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['sergivo.pythonanywhere.com'])
 
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', ALLOWED_HOSTS)
+
 # Application definition
 
 INSTALLED_APPS = [
