@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.db.utils import IntegrityError
 
 from core import api_methods
 from core.models import User, Recipe
@@ -13,26 +14,29 @@ def index(request):
 
 
 def register_user(request):
+    alert_message = None
     if request.method == 'POST':
-        user = User.objects.create_user(
-            email=request.POST.get('email'),
-            name=request.POST.get('name'),
-            password=request.POST.get('password')
-        )
+        try:
+            user = User.objects.create_user(
+                email=request.POST.get('email'),
+                name=request.POST.get('name'),
+                password=request.POST.get('password')
+            )
 
-        user = authenticate(email=user.email, password=user.password)
+            user = authenticate(email=user.email, password=user.password)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
-        if user:
-            login(request, user)
-
-        return redirect('index')
+            return redirect('index')
+        except IntegrityError:
+            alert_message = 'User with this email already exists'
     context = {
-        'mock': 'mock'
+        'alert': alert_message
     }
     return render(request, 'registration.html', context)
 
 
 def authenticate_user(request):
+    alert_message = None
     if request.method == 'POST':
         user = authenticate(
             email=request.POST.get('email'), 
@@ -45,7 +49,7 @@ def authenticate_user(request):
         else:
             alert_message = 'Email or password is incorrect'
     context = {
-        'mock': 'mock'
+        'alert': alert_message
     }
     return render(request, 'auth.html', context)
 
