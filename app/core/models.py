@@ -152,13 +152,13 @@ class Ingredient(models.Model):
 
 class RecipeComponentQuerySet(models.QuerySet):
     def with_price(self):
-        components_with_price = self.annotate(
+        components_with_price = self.prefetch_related('ingredient').annotate(
             price=models.F('ingredient__price') * models.F('weight') / 1000
             )
         return components_with_price
     
     def with_calories(self):
-        components_with_calories = self.annotate(
+        components_with_calories = self.prefetch_related('ingredient').annotate(
             calories=models.F('ingredient__calories') * models.F('weight') / 100
             )
         return components_with_calories

@@ -40,9 +40,7 @@
                         <div class="row">
                             <h2>{{ recipe.title }}</h2>
                             <div class="col-12 col-sm-6 d-flex flex-column justify-content-between">
-                                <h6>Описание рецепта Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi eius nemo voluptatum minus
-                                    facilis blanditiis ut architecto rem maiores, aperiam aut debitis repellat quod voluptates natus, laboriosam hic
-                                    adipisci non.</h6>
+                                <h6>{{ recipe.description }}</h6>
                                 <h6>Рецепт рецепт Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi eius nemo voluptatum minus
                                     facilis blanditiis ut architecto rem maiores, aperiam aut debitis repellat quod voluptates natus, laboriosam hic
                                     adipisci non.</h6>
@@ -51,7 +49,7 @@
                                 <small class="link-secondary">Ингредиенты:</small>
                                 <ul class="list-group list-group-flush">
                                     {% for component in recipe.comps %}
-                                        <li class="list-group-item disabled"><small>{{ component.name }} ({{ component.weight }}г.)</small></li>
+                                        <li class="list-group-item disabled"><small>{{ component.ingredient.name }} ({{ component.weight }}г.)</small></li>
                                     {% endfor %}
                                 </ul>
                                 <div><small class="link-secondary">Общая калорийность: {{ recipe.total_calories }} ккал</small></div>
