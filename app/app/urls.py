@@ -40,4 +40,4 @@ urlpatterns = [
     path('account', views.user_account, name='user_account'),
     path('dishes', views.show_recipes_cards, name='show_recipes_cards'),
     path('logout', views.logout_user, name='logout_user'),
-] + static(MEDIA_URL, document_root=MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
