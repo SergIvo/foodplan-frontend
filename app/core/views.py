@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 
 from core import api_methods
-from core.models import User, Recipe, Ingredient
+from core.models import User, Recipe
 
 
 def index(request):
@@ -125,12 +125,16 @@ def show_recipes_cards(request):
     if not request.user.is_authenticated:
         return redirect('authenticate_user')
 
-    recipes = list(Recipe.objects.all().prefetch_related('ingredients'))
+    recipes = list(
+        Recipe.objects.all().prefetch_related('components').order_by_user_interest(
+            request.user
+        )
+    )
     for recipe in recipes:
-        print('Recipe:', recipe)
-        recipe.ingreds = recipe.ingredients.all()
-        total_calories = sum([ingredient.calories for ingredient in recipe.ingreds])
-        recipe.total_calories = total_calories
+        print('Recipe:', recipe, recipe.user_interest)
+        recipe.comps = recipe.components.with_price().with_calories()
+        recipe.total_calories = sum([component.calories for component in recipe.comps])
+        recipe.total_price = sum([component.price for component in recipe.comps])
         recipe.fits = True
         if set(recipe.allergy_type).intersection(set(request.user.allergy_type)):
             recipe.fits = False
@@ -140,3 +144,9 @@ def show_recipes_cards(request):
         'recipes': recipes
     }
     return render(request, 'cards.html', context)
+
+
+def apply_filter(request):
+    if request.method == 'POST':
+        print([item for item in request.POST.items()])
+    return redirect('show_recipes_cards')

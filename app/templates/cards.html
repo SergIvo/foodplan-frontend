@@ -24,12 +24,16 @@
     </header>
     <main style="margin-top: calc(2rem + 75px);">
         <section>
-            <div class="container">
+            <div class="container d-grid gap-3">
                 {% for recipe in recipes %}
                 <div class="row">
                     <div class="col-12 col-md-4 d-flex justify-content-center">
                         <div class="card foodplan__card_borderless">
-                            <img src="{% static 'img/circle1.png' %}" alt="">
+                            {% if recipe.image %}
+                                <img src="{{ recipe.image.url }}" style="max-width:296px" alt="coocked dish image">
+                            {% else %}
+                                <img src="{% static 'img/circle1.png' %}" style="max-width:296px" alt="dish image placeholder">
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-12 col-md-8 d-flex flex-column justify-content-between">
@@ -46,11 +50,12 @@
                             <div class="col-12 col-sm-6">
                                 <small class="link-secondary">Ингредиенты:</small>
                                 <ul class="list-group list-group-flush">
-                                    {% for ingredient in recipe.ingreds %}
-                                        <li class="list-group-item disabled"><small>{{ ingredient.name }} (500г.)</small></li>
+                                    {% for component in recipe.comps %}
+                                        <li class="list-group-item disabled"><small>{{ component.name }} ({{ component.weight }}г.)</small></li>
                                     {% endfor %}
                                 </ul>
-                                <small class="link-secondary">Общая калорийность: {{ recipe.total_calories }} ккал</small>
+                                <div><small class="link-secondary">Общая калорийность: {{ recipe.total_calories }} ккал</small></div>
+                                <div><small class="link-secondary">Стоимость продуктов: {{ recipe.total_price }} р</small></div>
                             </div>
                         </div>
                     </div>
@@ -84,4 +89,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 </body>

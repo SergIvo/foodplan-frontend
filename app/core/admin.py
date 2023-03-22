@@ -4,6 +4,7 @@ Django admin customization.
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
+from django.utils.html import format_html
 
 from core import models
 
@@ -19,7 +20,6 @@ class UserAdmin(BaseUserAdmin):
             {
                 'fields': (
                     'is_active',
-                    'is_staff',
                     'is_superuser',
                     'is_subscribed',
                     'subscription_until',
@@ -39,13 +39,27 @@ class UserAdmin(BaseUserAdmin):
                 'password2',
                 'name',
                 'is_active',
-                'is_staff',
                 'is_superuser',
             )
         }),
     )
 
 
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'meal_type', 'menu_type', 'allergy_type')
+    list_filter = ('meal_type', 'menu_type', 'allergy_type')
+    raw_id_fields = ('users_liked', 'users_disliked')
+    
+    def show_image(self, obj):
+        return format_html(
+            '<img style="max-height:200px" src="{url}"/>',
+            url=obj.image.url
+        )
+
+    show_image.short_description = 'Preview'
+    readonly_fields = ('show_image',)
+
+
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Recipe)
+admin.site.register(models.Recipe, RecipeAdmin)
 admin.site.register(models.Ingredient)

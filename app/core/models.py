@@ -61,14 +61,31 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=True)
     is_subscribed = models.BooleanField(default=False)
     subscription_until = models.DateTimeField(blank=True, null=True)
-    allergy_type = MultiSelectField(choices=ALLERGY_TYPE_CHOICES, max_choices=6, max_length=125, blank=True)
+    allergy_type = MultiSelectField(
+        choices=ALLERGY_TYPE_CHOICES, 
+        max_choices=6, 
+        max_length=125, 
+        blank=True
+    )
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class RecipeQuerySet(models.QuerySet):
+    def order_by_user_interest(self, user):
+        liked = self.filter(users_liked__id__exact=user.id).annotate(user_interest=models.Value(1))
+        disliked = self.filter(users_disliked__id__exact=user.id).annotate(user_interest=models.Value(-1))
+        neutral = (self.exclude(users_liked__id__exact=user.id)
+            .exclude(users_disliked__id__exact=user.id)
+            .annotate(user_interest=models.Value(0))
+        )
+        ordered_recipes = liked.union(disliked, neutral).order_by('-user_interest')
+        return ordered_recipes
 
 
 class Recipe(models.Model):
@@ -98,38 +115,74 @@ class Recipe(models.Model):
         ("KETO", "Keto"),
     )
 
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.DO_NOTHING,
-        related_name='created_by',
-    )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    price = models.DecimalField(max_digits=5, decimal_places=2)
     meal_type = models.CharField(max_length=9, choices=MEAL_TYPE_CHOICES)
     allergy_type = MultiSelectField(choices=ALLERGY_TYPE_CHOICES, max_choices=6, max_length=125, blank=True)
     menu_type = models.CharField(
         max_length=10,
         choices=MENU_TYPE_CHOICES)
     link = models.CharField(max_length=255, blank=True)
-    ingredients = models.ManyToManyField('Ingredient')
     image = models.ImageField(null=True, blank=True)
+    users_liked = models.ManyToManyField(
+        User,
+        related_name='liked_recipes',
+        blank=True)
+    users_disliked = models.ManyToManyField(
+        User,
+        related_name='disliked_recipes',
+        blank=True)
+
+    objects = RecipeQuerySet.as_manager()
 
     def __str__(self):
         return self.title
 
 
 class Ingredient(models.Model):
-    """Ingredient for recipes."""
+    """Ingredient."""
 
     name = models.CharField(max_length=255)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.DO_NOTHING,
-        related_name='added_by',
-    )
     calories = models.PositiveSmallIntegerField(blank=True, null=True)
-    weight = models.PositiveSmallIntegerField(blank=True, null=True)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
         return self.name
+
+
+class RecipeComponentQuerySet(models.QuerySet):
+    def with_price(self):
+        components_with_price = self.annotate(
+            price=models.F('ingredient__price') * models.F('weight') / 1000
+            )
+        return components_with_price
+    
+    def with_calories(self):
+        components_with_calories = self.annotate(
+            calories=models.F('ingredient__calories') * models.F('weight') / 100
+            )
+        return components_with_calories
+
+
+
+class RecipeComponent(models.Model):
+    """Ingredient measuerd for recipe."""
+
+    name = models.CharField(max_length=255)
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='ingredients_in_recipes'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='components'
+    )
+    weight = models.PositiveSmallIntegerField(blank=True, null=True)
+
+    objects = RecipeComponentQuerySet.as_manager()
+
+    def __str__(self):
+        return self.name 
+       

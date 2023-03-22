@@ -9,6 +9,18 @@ body {
     grid-template-rows: auto 1fr auto;
 }
 
+.foodplan__title_link {
+    color: #91B93E;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.foodplan__title_link:hover {
+    color: #fe9700;
+    text-decoration: none;
+    font-size: 20px;
+}
+
 .foodplan__bg_grey {
     background-color: #F5F5F5;
 }

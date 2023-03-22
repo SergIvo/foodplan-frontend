@@ -38,7 +38,7 @@ urlpatterns = [
     path('registration', views.register_user, name='register_user'),
     path('auth', views.authenticate_user, name='authenticate_user'),
     path('account', views.user_account, name='user_account'),
-    path('dishes', views.show_recipes_cards, name='show_dishes_cards'),
+    path('dishes', views.show_recipes_cards, name='show_recipes_cards'),
     path('logout', views.logout_user, name='logout_user'),
 ]
 
