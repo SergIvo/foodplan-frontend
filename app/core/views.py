@@ -108,7 +108,7 @@ def user_account(request):
     context = {
         'user': {'name': user_name, 'email': user_email, 'password': '*********'},
         'allergies': allergies,
-        'menu': {'name': 'menu1', 'calories': 100500, 'persons': 2, 'allergies': 'something', 'eating_times': 4},
+        'menu': {'name': 'Меню', 'calories': 100500, 'persons': 2, 'allergies': 'something', 'eating_times': 4},
         'alert': alert_message
     }
     return render(request, 'lk.html', context)
