@@ -45,6 +45,12 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+class ComponentsInline(admin.TabularInline):
+    model = models.RecipeComponent
+    raw_id_fields = ('ingredient',)
+    fields = ('weight', 'ingredient')
+
+
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('title', 'meal_type', 'menu_type', 'allergy_type')
     list_filter = ('meal_type', 'menu_type', 'allergy_type')
@@ -58,6 +64,8 @@ class RecipeAdmin(admin.ModelAdmin):
 
     show_image.short_description = 'Preview'
     readonly_fields = ('show_image',)
+    
+    inlines = (ComponentsInline,)
 
 
 admin.site.register(models.User, UserAdmin)
