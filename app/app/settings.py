@@ -37,7 +37,7 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['sergivo.pythonanywhere.com'])
 
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', ALLOWED_HOSTS)
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', ['https://sergivo.pythonanywhere.com'])
 
 # Application definition
 
@@ -162,5 +162,3 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
 }
-
-BASE_API_URL = env.str('BASE_API_URL', 'http://localhost:8000')
